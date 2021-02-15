@@ -1,6 +1,8 @@
 export default class NotificationMessage {
-  static timeout;
-  static current;
+  static activeComponent = {
+    timeoutId: null,
+    component: null,
+  }; 
 
   constructor(message = '', {
     duration = 2000,
@@ -10,10 +12,11 @@ export default class NotificationMessage {
       success: 'success',
       error: 'error',
     };
+    this.type = types[type];
+    if (!this.type) throw new Error('Invalid type specified');
 
     this.message = message;
     this.duration = duration;
-    this.type = types[type] || 'success';
 
     this.render();
   }
@@ -37,10 +40,11 @@ export default class NotificationMessage {
   }
 
   show(target = document.body) {
-    if (this.constructor.current) this.constructor.current.remove();
-    this.constructor.current = target.appendChild(this.element);
-    if (this.constructor.timeout) clearTimeout(this.constructor.timeout);
-    this.constructor.timeout = setTimeout(() => this.remove(), this.duration);
+    const current = this.constructor.activeComponent;
+    clearTimeout(current.timeoutId);
+    current.component?.remove();
+    current.component = target.appendChild(this.element);
+    current.timeoutId = setTimeout(() => this.remove(), this.duration);
   }
 
   remove() {
