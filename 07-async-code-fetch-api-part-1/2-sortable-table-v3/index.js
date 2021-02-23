@@ -55,7 +55,6 @@ export default class SortableTable {
     this.end = end;
 
     this.render();
-    this.initEventListners();
   }
 
   get template() {
@@ -105,7 +104,18 @@ export default class SortableTable {
 
     const { id, order } = this.sorted;
     this.data = await this.loadData(id, order, this.start, this.end);
-    this.subElements.body.innerHTML = this.getBody(this.data);
+    this.renderRows(this.data);
+
+    this.initEventListners();
+  }
+
+  renderRows(data) {
+    if (data.length) {
+      this.element.classList.remove('sortable-table_empty');
+      this.subElements.body.innerHTML = this.getBody(data);
+    } else {
+      this.element.classList.add('sortable-table_empty');
+    }
   }
 
   getSubElements() {
@@ -148,12 +158,12 @@ export default class SortableTable {
 
   sortLocally(id, order) {
     const sortedData = this.sortData(id, order);
-    this.subElements.body.innerHTML = this.getBody(sortedData);
+    this.renderRows(sortedData);
   }
 
   async sortOnServer(id, order, start, end) {
     this.data = await this.loadData(id, order, start, end);
-    this.subElements.body.innerHTML = this.getBody(this.data);
+    this.renderRows(this.data);
   }
 
   sortData(id, order) {
