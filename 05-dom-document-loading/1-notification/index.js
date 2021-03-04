@@ -43,7 +43,7 @@ export default class NotificationMessage {
     const current = this.constructor.activeComponent;
     clearTimeout(current.timeoutId);
     current.component?.remove();
-    current.component = target.appendChild(this.element);
+    current.component = target.append(this.element);
     current.timeoutId = setTimeout(() => this.remove(), this.duration);
   }
 
